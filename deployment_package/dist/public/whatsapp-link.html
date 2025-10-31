@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>مولّد رابط واتساب</title>
+    <style>
+      :root {
+        color-scheme: light dark;
+        font-family: "Tajawal", "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        --bg: #f5f6fa;
+        --card: #ffffff;
+        --text: #1b1b1d;
+        --accent: #25d366;
+        --accent-dark: #1da955;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #111827;
+          --card: #1f2937;
+          --text: #f9fafb;
+        }
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: radial-gradient(circle at top, rgba(37, 211, 102, 0.15), transparent), var(--bg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 1.5rem;
+        color: var(--text);
+      }
+
+      .card {
+        width: min(640px, 100%);
+        background: var(--card);
+        border-radius: 18px;
+        box-shadow: 0 24px 60px rgba(15, 23, 42, 0.15);
+        padding: 2.5rem 2.25rem;
+        display: grid;
+        gap: 1.75rem;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: 1.9rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      h1 span {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+        border-radius: 16px;
+        background: rgba(37, 211, 102, 0.18);
+        color: var(--accent);
+        font-size: 1.8rem;
+      }
+
+      .fields {
+        display: grid;
+        gap: 1.25rem;
+      }
+
+      label {
+        display: grid;
+        gap: 0.4rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+      }
+
+      input,
+      textarea {
+        border: 1px solid rgba(148, 163, 184, 0.35);
+        border-radius: 14px;
+        padding: 0.9rem 1rem;
+        font-size: 1rem;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+        background: transparent;
+        color: inherit;
+      }
+
+      textarea {
+        min-height: 140px;
+        resize: vertical;
+      }
+
+      input:focus,
+      textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.2);
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        justify-content: flex-start;
+      }
+
+      button,
+      a.generate {
+        border: none;
+        border-radius: 999px;
+        padding: 0.85rem 1.6rem;
+        font-size: 1rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        text-decoration: none;
+      }
+
+      button.primary,
+      a.generate {
+        background: linear-gradient(135deg, var(--accent), var(--accent-dark));
+        color: #fff;
+        box-shadow: 0 18px 32px rgba(37, 211, 102, 0.25);
+      }
+
+      button.primary:disabled,
+      a.generate.disabled {
+        cursor: not-allowed;
+        opacity: 0.6;
+        box-shadow: none;
+      }
+
+      button.secondary {
+        background: rgba(37, 211, 102, 0.1);
+        color: var(--accent-dark);
+      }
+
+      button:not(:disabled):hover,
+      a.generate:not(.disabled):hover {
+        transform: translateY(-1px);
+        box-shadow: 0 22px 38px rgba(37, 211, 102, 0.3);
+      }
+
+      .link-preview {
+        border: 1px dashed rgba(148, 163, 184, 0.45);
+        border-radius: 16px;
+        padding: 1.25rem;
+        background: rgba(37, 211, 102, 0.04);
+        word-break: break-word;
+        font-size: 0.95rem;
+        position: relative;
+      }
+
+      .link-preview code {
+        display: block;
+        direction: ltr;
+        text-align: left;
+      }
+
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(20px);
+        background: #111827;
+        color: #f9fafb;
+        padding: 0.75rem 1.2rem;
+        border-radius: 999px;
+        opacity: 0;
+        transition: opacity 0.2s ease, transform 0.2s ease;
+        pointer-events: none;
+      }
+
+      .toast.show {
+        opacity: 0.96;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      .note {
+        font-size: 0.85rem;
+        color: rgba(100, 116, 139, 0.95);
+      }
+
+      @media (max-width: 520px) {
+        .card {
+          padding: 1.75rem 1.5rem;
+        }
+
+        h1 {
+          font-size: 1.6rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main class="card">
+      <h1><span>💬</span> مولّد رابط واتساب</h1>
+      <p class="note">اكتب رقم الهاتف (بصيغة دولية بدون أصفار أو رموز) والرسالة التي تريد إرسالها، ثم انسخ الرابط أو جرّب فتحه مباشرةً.</p>
+      <form class="fields" id="whatsapp-form">
+        <label>
+          رقم الهاتف الدولي
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            placeholder="مثال: 966501234567"
+            autocomplete="tel"
+            required
+          />
+        </label>
+        <label>
+          الرسالة
+          <textarea id="message" name="message" placeholder="أهلاً، أريد الاستفسار عن ..." required></textarea>
+        </label>
+      </form>
+      <div class="actions">
+        <a class="generate disabled" id="open-link" href="#" target="_blank" rel="noopener">فتح في واتساب</a>
+        <button class="secondary" id="copy-link" type="button" disabled>نسخ الرابط</button>
+      </div>
+      <section class="link-preview" aria-live="polite">
+        <strong>الرابط الناتج:</strong>
+        <code id="preview">—</code>
+      </section>
+    </main>
+    <div class="toast" id="toast">تم نسخ الرابط!</div>
+    <script>
+      const form = document.getElementById("whatsapp-form");
+      const phoneInput = document.getElementById("phone");
+      const messageInput = document.getElementById("message");
+      const preview = document.getElementById("preview");
+      const openLink = document.getElementById("open-link");
+      const copyButton = document.getElementById("copy-link");
+      const toast = document.getElementById("toast");
+
+      const buildLink = () => {
+        const digits = phoneInput.value.replace(/[^0-9]/g, "");
+        const message = messageInput.value.trim();
+
+        if (!digits || !message) {
+          preview.textContent = "—";
+          openLink.classList.add("disabled");
+          openLink.setAttribute("aria-disabled", "true");
+          openLink.href = "#";
+          copyButton.disabled = true;
+          return null;
+        }
+
+        const encodedMessage = encodeURIComponent(message);
+        const link = `https://wa.me/${digits}?text=${encodedMessage}`;
+
+        preview.textContent = link;
+        openLink.classList.remove("disabled");
+        openLink.removeAttribute("aria-disabled");
+        openLink.href = link;
+        copyButton.disabled = false;
+
+        return link;
+      };
+
+      const showToast = () => {
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 1800);
+      };
+
+      form.addEventListener("input", buildLink);
+
+      copyButton.addEventListener("click", async () => {
+        const link = buildLink();
+        if (!link) return;
+        try {
+          await navigator.clipboard.writeText(link);
+          showToast();
+        } catch (error) {
+          window.prompt("انسخ الرابط يدويًا:", link);
+        }
+      });
+
+      // توليد رابط افتراضي عند تحميل الصفحة إذا وُجدت قيم محفوظة مسبقًا
+      [phoneInput, messageInput].forEach((input) => {
+        const stored = sessionStorage.getItem(input.id);
+        if (stored) {
+          input.value = stored;
+        }
+        input.addEventListener("input", () => {
+          sessionStorage.setItem(input.id, input.value);
+        });
+      });
+
+      buildLink();
+    </script>
+  </body>
+</html>
